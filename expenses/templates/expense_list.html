@@ -1,0 +1,70 @@
+<!-- expenses/expense_list.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Expense List{% endblock %}
+
+{% block content %}
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+  <div class="message">{{message}}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+  <h2>Expense List</h2>
+  <div class="expense-controls">
+    <form method="get" action="{% url 'expense_list' %}">
+      <label for="search">Search Expenses:</label>
+      <input type="text" name="search" id="search" value="{{ search_query }}">
+      <button type="submit">Search</button>
+    </form>
+    <ul class="sort-links">
+      <li><a href="?order_by=spent_at">Ordenar por Data</a></li>
+      <li><a href="?order_by=type_of_expense">Ordenar por Tipo de Despesa</a></li>
+      <li><a href="?order_by=expense_value">Ordenar por Valor</a></li>
+    </ul>
+  </div>
+
+  <div class="expense-list">
+    {% for expense in expenses %}
+      <div class="expense-item">
+        <div class="expense-details">
+          <div class="expense-date">{{ expense.spent_at }}</div>
+          <div>{{ expense.type_of_expense }} - R$ {{ expense.expense_value|floatformat:"2" }}</div>
+        </div>
+        <div class="expense-actions">
+          <form method="post" action="{% url 'delete_expense' expense.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="delete-button" onclick="return confirm('Tem certeza que deseja excluir esta despesa?')">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+          </form>
+          <a href="{% url 'edit_expense' expense.id %}" class="edit-button"><i class="fas fa-edit"></i> Edit</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if expenses.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ expenses.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Página {{ expenses.number }} de {{ expenses.paginator.num_pages }}.
+        </span>
+
+        {% if expenses.has_next %}
+            <a href="?page={{ expenses.next_page_number }}">next</a>
+            <a href="?page={{ expenses.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+
+
+  <p>Total Expense: R$ {{ total_expense|floatformat:"2" }}</p>
+{% endblock %}

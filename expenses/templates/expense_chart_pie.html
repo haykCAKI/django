@@ -1,0 +1,9 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Expense Pie Chart{% endblock %}
+
+{% block content %}
+  <h2>Expense Pie Chart</h2>
+  <img src="data:image/png;base64,{{ chart_data }}" alt="Expense Pie Chart">
+{% endblock %}
